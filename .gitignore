@@ -1,0 +1,43 @@
+# Python cache / compiled files
+*.py[cod]
+*$py.class
+__pycache__/
+.pytest_cache/ 
+ 
+# Jupyter Notebook checkpoints & autosave
+*.ipynb_autosave
+.ipynb_checkpoints/
+ 
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+ 
+# Logs / temp
+*.log
+*.tmp
+*.bak
+
+# Environment
+.env
+.env/
+env/
+ENV/
+ 
+# Virtual environment
+.venv/
+venv/
+
+# Data & outputs
+data
+runs/
+
+# Initial model
+notebook/*.pt
+
+# Word document
+*.doc
+*.docx
