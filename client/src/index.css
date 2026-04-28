@@ -1,0 +1,98 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: autumn --default;
+}
+
+@theme {
+  /* Font Family - Set as default*/
+  --default-font-family: "Poppins", sans-serif;
+
+  /* Typography Scale */
+  --font-size-headline-1: 3.25rem; /* 52px */
+  --font-size-headline-2: 2.5rem; /* 40px */
+  --font-size-headline-3: 1.5rem; /* 24px */
+  --font-size-headline-4: 1.25rem; /* 20px */
+  --font-size-body-1: 1rem; /* 16px */
+  --font-size-body-2: 0.875rem; /* 14px */
+  --font-size-body-3: 0.75rem; /* 12px */
+
+  --line-height-headline-1: 3.75rem; /* 60px */
+  --line-height-headline-2: 3rem; /* 48px */
+  --line-height-headline-3: 2rem; /* 32px */
+  --line-height-headline-4: 1.75rem; /* 28px */
+  --line-height-body-1: 1.5rem; /* 24px */
+  --line-height-body-2: 1.375rem; /* 22px */
+  --line-height-body-3: 1.25rem; /* 20px */
+
+  --font-weight-headline: 600; /* semibold */
+  --font-weight-body: 500; /* medium */
+
+  --letter-spacing: 0%;
+
+  /* Base Colors */
+  --color-brown-600: #26231e;
+  --color-brown-500: #43403b;
+  --color-brown-400: #75716b;
+  --color-brown-300: #dad6d1;
+  --color-brown-200: #efeeeb;
+  --color-brown-100: #f9f8f6;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-bg-gray: #f3f4f6;
+
+  /* Brand Colors */
+  --color-brand-orange: #f2b68c;
+  --color-brand-green: #12b279;
+  --color-brand-green-soft: #d7f2e9;
+  --color-brand-red: #eb5164;
+}
+
+/* Typography Utility Classes */
+@utility style-headline-1 {
+  font-weight: var(--font-weight-headline);
+  font-size: var(--font-size-headline-1);
+  line-height: var(--line-height-headline-1);
+  letter-spacing: var(--letter-spacing);
+}
+
+@utility style-headline-2 {
+  font-weight: var(--font-weight-headline);
+  font-size: var(--font-size-headline-2);
+  line-height: var(--line-height-headline-2);
+  letter-spacing: var(--letter-spacing);
+}
+
+@utility style-headline-3 {
+  font-weight: var(--font-weight-headline);
+  font-size: var(--font-size-headline-3);
+  line-height: var(--line-height-headline-3);
+  letter-spacing: var(--letter-spacing);
+}
+
+@utility style-headline-4 {
+  font-weight: var(--font-weight-headline);
+  font-size: var(--font-size-headline-4);
+  line-height: var(--line-height-headline-4);
+  letter-spacing: var(--letter-spacing);
+}
+
+@utility style-body-1 {
+  font-weight: var(--font-weight-body);
+  font-size: var(--font-size-body-1);
+  line-height: var(--line-height-body-1);
+  letter-spacing: var(--letter-spacing);
+}
+
+@utility style-body-2 {
+  font-weight: var(--font-weight-body);
+  font-size: var(--font-size-body-2);
+  line-height: var(--line-height-body-2);
+  letter-spacing: var(--letter-spacing);
+}
+
+@utility style-body-3 {
+  font-weight: var(--font-weight-body);
+  font-size: var(--font-size-body-3);
+  line-height: var(--line-height-body-3);
+  letter-spacing: var(--letter-spacing);
+}
