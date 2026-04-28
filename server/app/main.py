@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter, FastAPI
 
 from .utils import db
+from .routers import detect
 
 
 @asynccontextmanager
@@ -27,3 +28,4 @@ def health():
 
 
 app.include_router(router)
+app.include_router(detect.router)
