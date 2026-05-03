@@ -3,11 +3,7 @@
 *$py.class
 __pycache__/
 .pytest_cache/ 
- 
-# Jupyter Notebook checkpoints & autosave
-*.ipynb_autosave
-.ipynb_checkpoints/
- 
+
 # OS / Editor files
 .DS_Store
 Thumbs.db
@@ -30,17 +26,3 @@ ENV/
 # Virtual environment
 .venv/
 venv/
-
-# Node modules
-node_modules
-
-# Data & outputs
-data
-runs/
-
-# Initial model
-notebook/*.pt
-
-# Word document
-*.doc
-*.docx

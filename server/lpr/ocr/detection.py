@@ -7,8 +7,6 @@ import numpy as np
 
 from .preprocessing import preprocess_for_ocr
 
-# Thai license plate character set (digits, space, Thai consonants).
-TH_PLATE_CHARS = "0123456789 กขคฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ"
 
 _reader: easyocr.Reader | None = None
 
@@ -32,7 +30,7 @@ def detect_text(
     *,
     preprocess: bool = True,
     preprocess_kwargs: dict[str, Any] | None = None,
-    allowlist: str | None = TH_PLATE_CHARS,
+    allowlist: str | None = None,
     **readtext_kwargs: Any,
 ) -> PlateOcrResult:
     """Run OCR on a plate crop.
