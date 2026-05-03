@@ -37,7 +37,7 @@ function useUploadImage() {
       "image/png",
       "image/webp",
     ];
-    const maxFileSizeInBytes = 5 * 1024 * 1024;
+    const maxFileSizeInBytes = 20 * 1024 * 1024;
 
     if (!allowedMimeTypes.includes(selectedFile.type)) {
       setPictureError("Only JPG, JPEG, PNG, and WEBP files are allowed.");
@@ -46,7 +46,7 @@ function useUploadImage() {
     }
 
     if (selectedFile.size > maxFileSizeInBytes) {
-      setPictureError("Image size must be 5 MB or smaller.");
+      setPictureError("Image size must be 20 MB or smaller.");
       setSelectedImageFile(null);
       return;
     }
