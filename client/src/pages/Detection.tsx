@@ -2,6 +2,32 @@ import { Image } from "lucide-react";
 import { useState } from "react";
 import useDetectImage from "../hooks/useDetectImage";
 import MainWithNavbar from "../layout/MainWithNavbar";
+import type { BoundingBox, DetectionResultItem } from "../types/detection";
+
+type OverlayBox = {
+  key: string;
+  bbox: BoundingBox;
+  rectClass: string;
+  textClass: string;
+  label: string;
+};
+
+function getPlateGlobalBBox(item: DetectionResultItem): BoundingBox | null {
+  if (!item.plate) {
+    return null;
+  }
+
+  if (!item.car) {
+    return item.plate.bbox;
+  }
+
+  return {
+    x1: item.car.bbox.x1 + item.plate.bbox.x1,
+    y1: item.car.bbox.y1 + item.plate.bbox.y1,
+    x2: item.car.bbox.x1 + item.plate.bbox.x2,
+    y2: item.car.bbox.y1 + item.plate.bbox.y2,
+  };
+}
 
 function Detection() {
   const {
@@ -9,6 +35,7 @@ function Detection() {
     pictureError,
     selectedImageFile,
     previewImageUrl,
+    detectedImageUrl,
     handleImageFileChange,
     isDetecting,
     detectError,
@@ -19,6 +46,10 @@ function Detection() {
   const [detectCar, setDetectCar] = useState(true);
   const [detectPlate, setDetectPlate] = useState(true);
   const [preprocessOcr, setPreprocessOcr] = useState(true);
+  const [imageNaturalSize, setImageNaturalSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (
     event
@@ -30,6 +61,46 @@ function Detection() {
       preprocessOcr,
     });
   };
+
+  const overlayBoxes: OverlayBox[] =
+    detectResult?.results.flatMap((item, index) => {
+      const boxes: OverlayBox[] = [];
+
+      if (item.car) {
+        boxes.push({
+          key: `car-${item.carIndex ?? index}`,
+          bbox: item.car.bbox,
+          rectClass: "stroke-error",
+          textClass: "text-error",
+          label:
+            item.carIndex !== null
+              ? `Car #${item.carIndex + 1}`
+              : "Detected car",
+        });
+      }
+
+      const plateGlobalBBox = getPlateGlobalBBox(item);
+      if (plateGlobalBBox) {
+        boxes.push({
+          key: `plate-${item.carIndex ?? index}`,
+          bbox: plateGlobalBBox,
+          rectClass: "stroke-warning",
+          textClass: "text-warning",
+          label: "Plate",
+        });
+      }
+
+      return boxes;
+    }) ?? [];
+
+  const overlayLongestSide = imageNaturalSize
+    ? Math.max(imageNaturalSize.width, imageNaturalSize.height)
+    : 0;
+  const overlayStrokeWidth =
+    overlayLongestSide > 0 ? Math.max(2, overlayLongestSide * 0.0035) : 2;
+  const overlayFontSize =
+    overlayLongestSide > 0 ? Math.max(14, overlayLongestSide * 0.018) : 14;
+  const overlayLabelOffset = Math.max(8, overlayFontSize * 0.4);
 
   return (
     <MainWithNavbar className="gap-8">
@@ -137,6 +208,54 @@ function Detection() {
       </section>
       {detectResult && detectResult.results.length > 0 ? (
         <section className="flex flex-col gap-4">
+          {overlayBoxes.length > 0 && detectedImageUrl && (
+            <figure className="self-center lg:self-start">
+              <div className="relative inline-block">
+                <img
+                  src={detectedImageUrl}
+                  alt="Detection result"
+                  onLoad={(event) => {
+                    setImageNaturalSize({
+                      width: event.currentTarget.naturalWidth,
+                      height: event.currentTarget.naturalHeight,
+                    });
+                  }}
+                  className="block max-h-80 md:max-h-100 rounded-2xl"
+                />
+                {imageNaturalSize ? (
+                  <svg
+                    viewBox={`0 0 ${imageNaturalSize.width} ${imageNaturalSize.height}`}
+                    className="absolute inset-0 h-full w-full pointer-events-none"
+                    aria-hidden="true"
+                  >
+                    {overlayBoxes.map((box) => (
+                      <g key={box.key}>
+                        <rect
+                          x={box.bbox.x1}
+                          y={box.bbox.y1}
+                          width={Math.max(box.bbox.x2 - box.bbox.x1, 0)}
+                          height={Math.max(box.bbox.y2 - box.bbox.y1, 0)}
+                          className={`${box.rectClass} fill-transparent`}
+                          strokeWidth={overlayStrokeWidth}
+                        />
+                        <text
+                          x={box.bbox.x1}
+                          y={Math.max(
+                            box.bbox.y1 - overlayLabelOffset,
+                            overlayFontSize + 2
+                          )}
+                          fontSize={overlayFontSize}
+                          className={`${box.textClass} fill-current font-bold`}
+                        >
+                          {box.label}
+                        </text>
+                      </g>
+                    ))}
+                  </svg>
+                ) : null}
+              </div>
+            </figure>
+          )}
           <h4 className="style-headline-4 underline">Result</h4>
           <ul className="flex flex-col gap-6">
             {detectResult.results.map((item, index) => {
