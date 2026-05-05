@@ -8,6 +8,7 @@ from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from app.utils.carmel_key import camelize_keys
 from app.utils.provinces import match_province_from_ocr_texts
+from lpr.features.video.detection import detect_video_cross_events
 from lpr.ocr.detection import detect_text
 from lpr.yolo.car.detection import detect_cars
 from lpr.yolo.license_plate.detection import detect_license_plates
@@ -116,3 +117,50 @@ async def detect_from_image(
         )
 
     return {"count": len(results), "results": results}
+
+
+@router.post("/video")
+async def detect_from_video(
+    video: UploadFile = File(...),
+    lineOrientation: str = Form("horizontal"),
+    point: float | None = Form(None),
+    detectCar: bool = Form(True),
+    detectPlate: bool = Form(True),
+    preprocessOcr: bool = Form(True),
+):
+    orientation = lineOrientation.strip().lower()
+    if orientation not in {"horizontal", "vertical"}:
+        raise HTTPException(
+            status_code=400,
+            detail="lineOrientation must be either 'horizontal' or 'vertical'.",
+        )
+
+    if point is not None and not (0.0 <= point <= 1.0):
+        raise HTTPException(
+            status_code=400,
+            detail="point must be in the range [0, 1].",
+        )
+
+    video_bytes = await video.read()
+    if not video_bytes:
+        raise HTTPException(status_code=400, detail="Input video is empty.")
+
+    try:
+        result = detect_video_cross_events(
+            video_bytes=video_bytes,
+            line_orientation=orientation,
+            point=point,
+            detect_car=detectCar,
+            detect_plate=detectPlate,
+            preprocess_ocr=preprocessOcr,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    if result["count"] == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="No valid detections crossed the configured line for OCR.",
+        )
+
+    return result
