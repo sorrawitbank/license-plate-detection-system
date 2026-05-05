@@ -6,21 +6,11 @@ import cv2
 import numpy as np
 
 from app.utils.carmel_key import camelize_keys
+from app.utils.crop_by_bbox import crop_by_bbox
 from app.utils.provinces import match_province_from_ocr_texts
 from lpr.ocr.detection import detect_text
 from lpr.yolo.car.detection import detect_cars
 from lpr.yolo.license_plate.detection import detect_license_plates
-
-
-def _crop_by_bbox(image: np.ndarray, bbox: dict[str, Any]) -> np.ndarray | None:
-    x1 = max(int(float(bbox["x1"])), 0)
-    y1 = max(int(float(bbox["y1"])), 0)
-    x2 = min(int(float(bbox["x2"])), image.shape[1])
-    y2 = min(int(float(bbox["y2"])), image.shape[0])
-
-    if x2 <= x1 or y2 <= y1:
-        return None
-    return image[y1:y2, x1:x2]
 
 
 def detect_image(
@@ -45,7 +35,7 @@ def detect_image(
 
         regions = []
         for index, car_detection in enumerate(car_detections):
-            car_crop = _crop_by_bbox(frame, car_detection["bbox"])
+            car_crop = crop_by_bbox(frame, car_detection["bbox"])
             if car_crop is None or car_crop.size == 0:
                 continue
             regions.append(
@@ -78,7 +68,7 @@ def detect_image(
                 continue
 
             best_plate = max(plate_detections, key=lambda item: item["confidence"])
-            plate_crop = _crop_by_bbox(ocr_input, best_plate["bbox"])
+            plate_crop = crop_by_bbox(ocr_input, best_plate["bbox"])
             if plate_crop is None or plate_crop.size == 0:
                 continue
 
