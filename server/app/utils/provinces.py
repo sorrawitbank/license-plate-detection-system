@@ -9,6 +9,7 @@ from rapidfuzz import fuzz, process
 
 
 class ProvinceMatch(TypedDict):
+    index: int
     provinceId: int
     name: str
 
@@ -42,10 +43,11 @@ def match_province_from_ocr_texts(ocr_texts: list[str]) -> ProvinceMatch | None:
     ids: list[int] = df["province_id"].tolist()
 
     best_id: int | None = None
+    best_text_index: int | None = None
     best_name = ""
     best_score = 0.0
 
-    for raw in ocr_texts:
+    for text_index, raw in enumerate(ocr_texts):
         text = raw.strip()
         if _plate_like(text):
             continue
@@ -56,10 +58,11 @@ def match_province_from_ocr_texts(ocr_texts: list[str]) -> ProvinceMatch | None:
         score_f = float(score)
         if score_f > best_score:
             best_score = score_f
+            best_text_index = int(text_index)
             best_id = int(ids[idx])
             best_name = str(matched_name)
 
-    if best_score < _MIN_WRATIO_SCORE or best_id is None:
+    if best_score < _MIN_WRATIO_SCORE or best_id is None or best_text_index is None:
         return None
 
-    return {"provinceId": best_id, "name": best_name}
+    return {"index": best_text_index, "provinceId": best_id, "name": best_name}
