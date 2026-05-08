@@ -39,7 +39,6 @@ async def detect_from_video(
     lineOrientation: str = Form("horizontal"),
     point: float | None = Form(None),
     detectCar: bool = Form(True),
-    detectPlate: bool = Form(True),
     preprocessOcr: bool = Form(True),
 ):
     orientation = lineOrientation.strip().lower()
@@ -65,7 +64,6 @@ async def detect_from_video(
             line_orientation=orientation,
             point=point,
             detect_car=detectCar,
-            detect_plate=detectPlate,
             preprocess_ocr=preprocessOcr,
         )
     except ValueError as exc:

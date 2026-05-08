@@ -35,7 +35,7 @@ venv/
 node_modules
 
 # Data & outputs
-data
+data/
 runs/
 
 # Initial model

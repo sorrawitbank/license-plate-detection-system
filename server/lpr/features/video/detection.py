@@ -104,7 +104,6 @@ def _build_candidates(
     *,
     frame: np.ndarray,
     detect_car: bool,
-    detect_plate: bool,
 ) -> list[dict[str, Any]]:
     regions = _build_regions(frame, detect_car=detect_car)
     candidates: list[dict[str, Any]] = []
@@ -117,24 +116,21 @@ def _build_candidates(
             ocr_input.shape[0] / 2.0,
         )
 
-        if detect_plate:
-            plate_detections = detect_license_plates(ocr_input)
-            if not plate_detections:
-                continue
+        plate_detections = detect_license_plates(ocr_input)
+        if not plate_detections:
+            continue
 
-            best_plate = max(plate_detections, key=lambda item: item["confidence"])
-            plate_crop = crop_by_bbox(ocr_input, best_plate["bbox"])
-            if plate_crop is None or plate_crop.size == 0:
-                continue
+        best_plate = max(plate_detections, key=lambda item: item["confidence"])
+        plate_crop = crop_by_bbox(ocr_input, best_plate["bbox"])
+        if plate_crop is None or plate_crop.size == 0:
+            continue
 
-            plate_info = best_plate
-            ocr_input = plate_crop
-            center_local = (
-                (float(best_plate["bbox"]["x1"]) + float(best_plate["bbox"]["x2"]))
-                / 2.0,
-                (float(best_plate["bbox"]["y1"]) + float(best_plate["bbox"]["y2"]))
-                / 2.0,
-            )
+        plate_info = best_plate
+        ocr_input = plate_crop
+        center_local = (
+            (float(best_plate["bbox"]["x1"]) + float(best_plate["bbox"]["x2"])) / 2.0,
+            (float(best_plate["bbox"]["y1"]) + float(best_plate["bbox"]["y2"])) / 2.0,
+        )
 
         offset_x, offset_y = region["offset"]
         center_global = (center_local[0] + offset_x, center_local[1] + offset_y)
@@ -162,7 +158,6 @@ def detect_video_cross_events(
     line_orientation: LineOrientation = "horizontal",
     point: float | None = None,
     detect_car: bool = True,
-    detect_plate: bool = True,
     preprocess_ocr: bool = True,
 ) -> dict[str, Any]:
     if not video_bytes:
@@ -209,7 +204,6 @@ def detect_video_cross_events(
             candidates = _build_candidates(
                 frame=frame,
                 detect_car=detect_car,
-                detect_plate=detect_plate,
             )
             if not candidates:
                 frame_index += 1
