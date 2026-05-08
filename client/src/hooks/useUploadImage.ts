@@ -57,10 +57,9 @@ function useUploadImage() {
 
   return {
     pictureRef,
-    pictureError,
     selectedImageFile,
     previewImageUrl,
-    setPictureError,
+    pictureError,
     handleImageFileChange,
   };
 }

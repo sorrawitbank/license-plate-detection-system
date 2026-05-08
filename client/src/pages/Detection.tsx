@@ -1,5 +1,4 @@
 import { Image } from "lucide-react";
-import { useState } from "react";
 import useDetectImage from "../hooks/useDetectImage";
 import MainWithNavbar from "../layout/MainWithNavbar";
 import type { BoundingBox, DetectionResultItem } from "../types/detection";
@@ -32,35 +31,22 @@ function getPlateGlobalBBox(item: DetectionResultItem): BoundingBox | null {
 function Detection() {
   const {
     pictureRef,
-    pictureError,
     selectedImageFile,
     previewImageUrl,
     detectedImageUrl,
-    handleImageFileChange,
-    isDetecting,
-    detectError,
+    imageNaturalSize,
     detectResult,
-    handleDetectImage,
+    pictureError,
+    detectError,
+    isDetecting,
+    detectCar,
+    detectPlate,
+    preprocessOcr,
+    handleCheckbox,
+    handleImageFileChange,
+    handleLoadImage,
+    handleSubmit,
   } = useDetectImage();
-
-  const [detectCar, setDetectCar] = useState(true);
-  const [detectPlate, setDetectPlate] = useState(true);
-  const [preprocessOcr, setPreprocessOcr] = useState(true);
-  const [imageNaturalSize, setImageNaturalSize] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
-
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (
-    event
-  ) => {
-    event.preventDefault();
-    await handleDetectImage({
-      detectCar,
-      detectPlate,
-      preprocessOcr,
-    });
-  };
 
   const overlayBoxes: OverlayBox[] =
     detectResult?.results.flatMap((item, index) => {
@@ -154,7 +140,7 @@ function Detection() {
                 <input
                   type="checkbox"
                   checked={detectCar}
-                  onChange={(e) => setDetectCar(e.target.checked)}
+                  onChange={(e) => handleCheckbox.detectCar(e.target.checked)}
                   className="checkbox checkbox-accent"
                 />
                 Detect car
@@ -163,7 +149,7 @@ function Detection() {
                 <input
                   type="checkbox"
                   checked={detectPlate}
-                  onChange={(e) => setDetectPlate(e.target.checked)}
+                  onChange={(e) => handleCheckbox.detectPlate(e.target.checked)}
                   className="checkbox checkbox-accent"
                 />
                 Detect plate
@@ -172,7 +158,9 @@ function Detection() {
                 <input
                   type="checkbox"
                   checked={preprocessOcr}
-                  onChange={(e) => setPreprocessOcr(e.target.checked)}
+                  onChange={(e) =>
+                    handleCheckbox.preprocessOcr(e.target.checked)
+                  }
                   className="checkbox checkbox-accent"
                 />
                 Preprocess OCR
@@ -214,12 +202,7 @@ function Detection() {
                 <img
                   src={detectedImageUrl}
                   alt="Detection result"
-                  onLoad={(event) => {
-                    setImageNaturalSize({
-                      width: event.currentTarget.naturalWidth,
-                      height: event.currentTarget.naturalHeight,
-                    });
-                  }}
+                  onLoad={handleLoadImage}
                   className="block max-h-80 md:max-h-100 rounded-2xl"
                 />
                 {imageNaturalSize ? (

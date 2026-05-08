@@ -2,23 +2,29 @@ import useUploadImage from "./useUploadImage";
 import { detectImage } from "../services/api/detection";
 import type { DetectImageResponse } from "../types/detection";
 import { AxiosError } from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function useDetectImage() {
   const {
     pictureRef,
-    pictureError,
     selectedImageFile,
     previewImageUrl,
-    setPictureError,
+    pictureError,
     handleImageFileChange: useUploadImageHandleChange,
   } = useUploadImage();
+  const [detectCar, setDetectCar] = useState(true);
+  const [detectPlate, setDetectPlate] = useState(true);
+  const [preprocessOcr, setPreprocessOcr] = useState(true);
   const [isDetecting, setIsDetecting] = useState(false);
   const [detectError, setDetectError] = useState<string | null>(null);
   const [detectResult, setDetectResult] = useState<DetectImageResponse | null>(
     null
   );
   const [detectedImageUrl, setDetectedImageUrl] = useState<string | null>(null);
+  const [imageNaturalSize, setImageNaturalSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
 
   useEffect(() => {
     return () => {
@@ -35,6 +41,12 @@ function useDetectImage() {
     setDetectedImageUrl(null);
   };
 
+  const handleCheckbox = {
+    detectCar: (value: boolean) => setDetectCar(value),
+    detectPlate: (value: boolean) => setDetectPlate(value),
+    preprocessOcr: (value: boolean) => setPreprocessOcr(value),
+  };
+
   const handleImageFileChange: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
@@ -44,15 +56,20 @@ function useDetectImage() {
     useUploadImageHandleChange(event);
   };
 
-  const handleDetectImage = async ({
-    detectCar = true,
-    detectPlate = true,
-    preprocessOcr = true,
-  }: {
-    detectCar?: boolean;
-    detectPlate?: boolean;
-    preprocessOcr?: boolean;
-  } = {}) => {
+  const handleLoadImage: React.ReactEventHandler<HTMLImageElement> = (
+    event
+  ) => {
+    setImageNaturalSize({
+      width: event.currentTarget.naturalWidth,
+      height: event.currentTarget.naturalHeight,
+    });
+  };
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (
+    event
+  ) => {
+    event.preventDefault();
+
     if (!selectedImageFile) {
       setDetectError("Please upload an image first.");
       return;
@@ -94,16 +111,21 @@ function useDetectImage() {
 
   return {
     pictureRef,
-    pictureError,
     selectedImageFile,
     previewImageUrl,
     detectedImageUrl,
-    setPictureError,
-    isDetecting,
-    detectError,
+    imageNaturalSize,
     detectResult,
+    pictureError,
+    detectError,
+    isDetecting,
+    detectCar,
+    detectPlate,
+    preprocessOcr,
+    handleCheckbox,
     handleImageFileChange,
-    handleDetectImage,
+    handleLoadImage,
+    handleSubmit,
   };
 }
 
