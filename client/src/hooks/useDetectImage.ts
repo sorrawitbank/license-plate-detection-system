@@ -1,8 +1,8 @@
-import useUploadImage from "./useUploadImage";
+import { AxiosError } from "axios";
+import { useEffect, useState } from "react";
 import { detectImage } from "../services/api/detection";
 import type { DetectImageResponse } from "../types/detection";
-import { AxiosError } from "axios";
-import React, { useEffect, useState } from "react";
+import useUploadImage from "./useUploadImage";
 
 function useDetectImage() {
   const {
