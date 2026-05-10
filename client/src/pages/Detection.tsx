@@ -1,8 +1,13 @@
 import { Image, Video } from "lucide-react";
-import ImageDetection from "../features/detection/ImageDetection";
+import { useSearchParams } from "react-router-dom";
+import { ImageDetection, VideoDetection } from "../features/detection";
 import MainWithNavbar from "../layout/MainWithNavbar";
 
 function Detection() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const isVideoTab = searchParams.get("tab")?.trim() === "video";
+
   return (
     <MainWithNavbar className="gap-8">
       <header>
@@ -10,7 +15,21 @@ function Detection() {
       </header>
       <div className="tabs tabs-border">
         <label className="tab gap-2 style-headline-4">
-          <input type="radio" name="detection-tabs" defaultChecked />
+          <input
+            type="radio"
+            name="detection-tabs"
+            defaultChecked={!isVideoTab}
+            onClick={() => {
+              setSearchParams(
+                (prev) => {
+                  const params = new URLSearchParams(prev);
+                  params.delete("tab");
+                  return params;
+                },
+                { replace: true }
+              );
+            }}
+          />
           <Image />
           Image
         </label>
@@ -18,11 +37,27 @@ function Detection() {
           <ImageDetection />
         </div>
         <label className="tab gap-2 style-headline-4">
-          <input type="radio" name="detection-tabs" />
+          <input
+            type="radio"
+            name="detection-tabs"
+            defaultChecked={isVideoTab}
+            onClick={() => {
+              setSearchParams(
+                (prev) => {
+                  const params = new URLSearchParams(prev);
+                  params.set("tab", "video");
+                  return params;
+                },
+                { replace: true }
+              );
+            }}
+          />
           <Video />
           Video
         </label>
-        <div className="tab-content pt-4">Video</div>
+        <div className="tab-content pt-4">
+          <VideoDetection />
+        </div>
       </div>
     </MainWithNavbar>
   );
