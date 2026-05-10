@@ -146,7 +146,7 @@ function VideoDetection() {
                 id="video-line-orientation-label"
                 className="style-headline-4 underline"
               >
-                Line Orientation
+                Line orientation
               </h4>
               <div
                 className="flex gap-8"
