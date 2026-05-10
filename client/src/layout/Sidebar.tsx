@@ -9,7 +9,7 @@ function Sidebar(props: Props) {
     <aside className="drawer lg:drawer-open">
       <input id="nav-drawer" type="checkbox" className="drawer-toggle" />
       {props.children}
-      <div className="drawer-side">
+      <div className="drawer-side h-[calc(100dvh-4.75rem)]">
         <label
           htmlFor="nav-drawer"
           aria-label="close sidebar"

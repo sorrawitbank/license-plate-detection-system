@@ -14,7 +14,7 @@ function MainWithNavbar(props: Props) {
       <Sidebar>
         <main
           className={cn(
-            "drawer-content flex flex-col p-4 md:p-8 xl:p-12",
+            "drawer-content flex flex-col p-4 md:p-8 lg:max-h-[calc(100dvh-4.75rem)] lg:overflow-auto xl:p-12",
             props.className
           )}
         >
