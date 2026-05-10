@@ -1,4 +1,4 @@
-import cn from "../utils/cn";
+import { cn } from "../utils";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
