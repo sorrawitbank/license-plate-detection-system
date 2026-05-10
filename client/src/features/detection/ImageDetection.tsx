@@ -1,31 +1,7 @@
 import { Image } from "lucide-react";
 import useDetectImage from "../../hooks/useDetectImage";
-import type { BoundingBox, DetectionResultItem } from "../../types/detection";
-
-type OverlayBox = {
-  key: string;
-  bbox: BoundingBox;
-  rectClass: string;
-  textClass: string;
-  label: string;
-};
-
-function getPlateGlobalBBox(item: DetectionResultItem): BoundingBox | null {
-  if (!item.plate) {
-    return null;
-  }
-
-  if (!item.car) {
-    return item.plate.bbox;
-  }
-
-  return {
-    x1: item.car.bbox.x1 + item.plate.bbox.x1,
-    y1: item.car.bbox.y1 + item.plate.bbox.y1,
-    x2: item.car.bbox.x1 + item.plate.bbox.x2,
-    y2: item.car.bbox.y1 + item.plate.bbox.y2,
-  };
-}
+import type { OverlayBox } from "../../types/detection";
+import { getPlateGlobalBBox } from "../../utils";
 
 function ImageDetection() {
   const {
@@ -135,7 +111,7 @@ function ImageDetection() {
               </div>
             </div>
             <div className="flex flex-col gap-4 md:gap-6 md:mt-5">
-              <label className="label style-body-1 text-accent-content">
+              <label className="label w-fit style-body-1 text-accent-content">
                 <input
                   type="checkbox"
                   checked={detectCar}
@@ -144,7 +120,7 @@ function ImageDetection() {
                 />
                 Detect car
               </label>
-              <label className="label style-body-1 text-accent-content">
+              <label className="label w-fit style-body-1 text-accent-content">
                 <input
                   type="checkbox"
                   checked={detectPlate}
@@ -153,7 +129,7 @@ function ImageDetection() {
                 />
                 Detect plate
               </label>
-              <label className="label style-body-1 text-accent-content">
+              <label className="label w-fit style-body-1 text-accent-content">
                 <input
                   type="checkbox"
                   checked={preprocessOcr}
@@ -252,7 +228,7 @@ function ImageDetection() {
               return (
                 <li key={item.carIndex ?? `full-${index}`}>
                   <article className="flex flex-col gap-2 rounded-lg border border-base-300 p-4">
-                    <h5 className="style-body-1 font-bold">
+                    <h5 className="style-headline-4">
                       {item.carIndex !== null
                         ? `Car #${item.carIndex + 1}`
                         : "Full frame"}
