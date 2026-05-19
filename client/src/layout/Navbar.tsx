@@ -7,7 +7,7 @@ function Navbar() {
         <Menu className="md:size-8" />
       </label>
       <h1 className="style-headline-3 md:style-headline-2 lg:style-headline-1">
-        Vehicle Entry–Exit Monitoring
+        Vehicle <span className="not-sm:hidden">Entry–Exit </span>Monitoring
       </h1>
     </nav>
   );
