@@ -5,7 +5,7 @@ export interface ParkingLog {
   detectedPlate: string;
   eventType: LogEventType;
   fullName: string | null;
-  slotId: number;
+  slotId: number | null;
   slotCode: string | null;
   confidence: number;
   detectedAt: string;

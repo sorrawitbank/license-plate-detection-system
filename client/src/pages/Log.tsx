@@ -1,5 +1,5 @@
-import { format } from "date-fns";
 import { CircleX, SearchX } from "lucide-react";
+import { ParkingLogPagination, ParkingLogTable } from "../features/log";
 import useGetLogs from "../hooks/useGetLogs";
 import MainWithNavbar from "../layout/MainWithNavbar";
 
@@ -72,40 +72,7 @@ function Log() {
       ) : logs.length ? (
         <>
           <div className="w-full overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-            <table className="table whitespace-nowrap">
-              {/* head */}
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>Detected Plate</th>
-                  <th>Event Type</th>
-                  <th>Full Name</th>
-                  <th>Slot No</th>
-                  <th>Slot Code</th>
-                  <th>Conf</th>
-                  <th>Detected At</th>
-                </tr>
-              </thead>
-              {/* body */}
-              <tbody>
-                {logs.map((log, index) => (
-                  <tr key={log.logId}>
-                    <th>{index + 1}</th>
-                    <td className="min-w-40 max-w-40 truncate">
-                      {log.detectedPlate}
-                    </td>
-                    <td>{log.eventType}</td>
-                    <td className="min-w-24 max-w-24 truncate">
-                      {log.fullName}
-                    </td>
-                    <td>{log.slotId}</td>
-                    <td>{log.slotCode}</td>
-                    <td>{log.confidence}</td>
-                    <td>{format(log.detectedAt, "dd MMMM yyyy HH:mm:ss")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <ParkingLogTable logs={logs} />
           </div>
           <span className="style-body-3 text-info">
             Total logs: {totalLogs}
@@ -117,85 +84,15 @@ function Log() {
           <span className="style-body-1">No logs found.</span>
         </div>
       )}
-      <div className="join">
-        {canGoPrev && (
-          <button
-            onClick={() => goToPrevPage()}
-            className="join-item btn not-sm:btn-sm"
-          >
-            «
-          </button>
-        )}
-        {page >= 4 && (
-          <button
-            onClick={() => goToPage(1)}
-            className="join-item btn not-sm:btn-sm"
-          >
-            1
-          </button>
-        )}
-        {page >= 5 && (
-          <button className="join-item btn btn-disabled not-sm:btn-sm">
-            ...
-          </button>
-        )}
-        {page - 2 >= 1 && (
-          <button
-            onClick={() => goToPage(page - 2)}
-            className="join-item btn not-sm:btn-sm"
-          >
-            {page - 2}
-          </button>
-        )}
-        {page - 1 >= 1 && (
-          <button
-            onClick={() => goToPage(page - 1)}
-            className="join-item btn not-sm:btn-sm"
-          >
-            {page - 1}
-          </button>
-        )}
-        <button className="join-item btn btn-active not-sm:btn-sm">
-          {page}
-        </button>
-        {page + 1 <= totalPages && (
-          <button
-            onClick={() => goToPage(page + 1)}
-            className="join-item btn not-sm:btn-sm"
-          >
-            {page + 1}
-          </button>
-        )}
-        {page + 2 <= totalPages && (
-          <button
-            onClick={() => goToPage(page + 2)}
-            className="join-item btn not-sm:btn-sm"
-          >
-            {page + 2}
-          </button>
-        )}
-        {page <= totalPages - 4 && (
-          <button className="join-item btn btn-disabled not-sm:btn-sm">
-            ...
-          </button>
-        )}
-        {page <= totalPages - 3 && (
-          <button
-            onClick={() => goToPage(totalPages)}
-            className="join-item btn not-sm:btn-sm"
-          >
-            {totalPages}
-          </button>
-        )}
-        {canGoNext && (
-          <button
-            onClick={() => goToNextPage()}
-            className="join-item btn not-sm:btn-sm"
-          >
-            »
-          </button>
-        )}
-      </div>
+      <ParkingLogPagination
+        page={page}
+        totalPages={totalPages}
+        canGoPrev={canGoPrev}
+        canGoNext={canGoNext}
+        goToPage={goToPage}
+        goToNextPage={goToNextPage}
+        goToPrevPage={goToPrevPage}
+      />
     </MainWithNavbar>
   );
 }
