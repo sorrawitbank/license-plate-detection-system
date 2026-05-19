@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { Video } from "lucide-react";
 import useDetectVideo from "../../hooks/useDetectVideo";
 import { cn, numberToDirection } from "../../utils";
@@ -9,18 +10,26 @@ function VideoDetection() {
     selectedVideoFile,
     previewVideoUrl,
     detectResult,
+    createLogResult,
     videoError,
     detectError,
+    createError,
+    hasDetect,
     isDetecting,
+    isLoading,
     detectCar,
     preprocessOcr,
     linePosition,
     lineOrientation,
+    lineOrientationDetect,
+    oneEventType,
     handleCheckbox,
     handleVideoFileChange,
     handleLineOrientationChange,
     handleLinePositionChange,
+    handleOneEventTypeChange,
     handleSubmit,
+    handleCreateLogSubmit,
   } = useDetectVideo();
 
   const linePositionPercent = `${linePosition * 100}%`;
@@ -30,7 +39,7 @@ function VideoDetection() {
       <section className="flex flex-col gap-6">
         <form onSubmit={handleSubmit}>
           <fieldset
-            disabled={isDetecting}
+            disabled={isDetecting || isLoading}
             className="fieldset flex flex-col gap-8 md:flex-row md:gap-12"
           >
             <div className="flex flex-col items-center gap-4 md:items-stretch">
@@ -287,6 +296,93 @@ function VideoDetection() {
               );
             })}
           </ul>
+          {createError && (
+            <div
+              role="alert"
+              className="style-body-1 font-bold bg-error text-error-content p-4 rounded-lg"
+            >
+              {createError}
+            </div>
+          )}
+          <form onSubmit={handleCreateLogSubmit}>
+            <fieldset
+              disabled={hasDetect || isDetecting || isLoading}
+              className="flex justify-between items-center"
+            >
+              <div className="flex gap-2">
+                <span className="style-body-1">
+                  {lineOrientationDetect === "horizontal" ? "Down" : "Right"} is
+                </span>
+                <label className="label style-body-1 text-accent-content font-bold">
+                  <input
+                    id="one-event-type-in"
+                    type="radio"
+                    name="one-event-type-radio"
+                    checked={oneEventType === "IN"}
+                    onChange={() => handleOneEventTypeChange("IN")}
+                    className="radio radio-accent"
+                  />
+                  IN
+                </label>
+                <label className="label style-body-1 text-accent-content font-bold">
+                  <input
+                    id="one-event-type-out"
+                    type="radio"
+                    name="one-event-type-radio"
+                    checked={oneEventType === "OUT"}
+                    onChange={() => handleOneEventTypeChange("OUT")}
+                    className="radio radio-accent"
+                  />
+                  OUT
+                </label>
+                <span className="style-body-1">
+                  {`, ${
+                    lineOrientationDetect === "horizontal" ? "Up" : "Left"
+                  } is `}
+                  <span className="font-bold">
+                    {oneEventType === "IN" ? "OUT" : "IN"}
+                  </span>
+                </span>
+              </div>
+              <button type="submit" className="btn btn-secondary btn-lg">
+                {isLoading && (
+                  <span className="loading loading-spinner loading-sm" />
+                )}
+                Create log
+              </button>
+            </fieldset>
+          </form>
+          {hasDetect && createLogResult && (
+            <>
+              <div
+                role="status"
+                className="text-success-content style-body-1 font-bold bg-success p-4 rounded-lg"
+              >
+                {`Created ${createLogResult.count} ${
+                  createLogResult.count === 1 ? "log" : "logs"
+                } successfully.`}
+              </div>
+              <ul className="flex flex-col gap-2">
+                {createLogResult.entries.map((item) => {
+                  const detectedAt = format(
+                    item.detectedAt,
+                    "dd MMMM yyyy HH:mm:ss"
+                  );
+                  const matchLabel =
+                    item.matchScore !== null
+                      ? ` (${Math.round(item.matchScore)}% match)`
+                      : "";
+
+                  return (
+                    <li key={item.logId} className="style-body-1">
+                      <span className="font-bold">{item.detectedPlate}</span>
+                      {` — ${item.status}${matchLabel} — ${item.eventType} at ${detectedAt}`}
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
         </section>
       )}
     </>

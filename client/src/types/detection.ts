@@ -26,6 +26,7 @@ export interface OcrResult {
 }
 
 export interface ProvinceResult {
+  index: number;
   provinceId: number;
   name: string;
 }

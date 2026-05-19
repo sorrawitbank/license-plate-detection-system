@@ -1,5 +1,12 @@
 import client from "../client";
-import type { GetLogsQuery, GetLogsResponse } from "../../types/log";
+import type {
+  CreateLogFromImagePayload,
+  CreateLogFromImageResponse,
+  CreateLogFromVideoPayload,
+  CreateLogFromVideoResponse,
+  GetLogsQuery,
+  GetLogsResponse,
+} from "../../types/log";
 
 const LOG_ROUTE_PREFIX = "/logs";
 
@@ -19,5 +26,25 @@ export async function getLogs({
     },
     signal: controller?.signal,
   });
+  return data;
+}
+
+export async function createLogFromImage(
+  payload: CreateLogFromImagePayload
+): Promise<CreateLogFromImageResponse> {
+  const { data } = await client.post<CreateLogFromImageResponse>(
+    `${LOG_ROUTE_PREFIX}/image`,
+    payload
+  );
+  return data;
+}
+
+export async function createLogFromVideo(
+  payload: CreateLogFromVideoPayload
+): Promise<CreateLogFromVideoResponse> {
+  const { data } = await client.post<CreateLogFromVideoResponse>(
+    `${LOG_ROUTE_PREFIX}/video`,
+    payload
+  );
   return data;
 }
