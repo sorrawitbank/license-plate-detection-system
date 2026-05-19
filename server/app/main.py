@@ -5,7 +5,7 @@ from fastapi import APIRouter, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from .utils import db
-from .routers import detect
+from .routers import detect, log
 
 
 @asynccontextmanager
@@ -42,3 +42,4 @@ def health():
 
 app.include_router(router)
 app.include_router(detect.router)
+app.include_router(log.router)
