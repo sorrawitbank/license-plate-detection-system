@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
 from lpr.features.image.detection import detect_image
 from lpr.features.video.detection import detect_video_cross_events
@@ -21,7 +23,7 @@ async def detect_from_image(
         raise HTTPException(status_code=400, detail="Input image is empty.")
 
     try:
-        return detect_image(
+        result = detect_image(
             image_bytes=image_bytes,
             detect_car=detectCar,
             detect_plate=detectPlate,
@@ -31,6 +33,8 @@ async def detect_from_image(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except LookupError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    return JSONResponse(status_code=200, content=jsonable_encoder(result))
 
 
 @router.post("/video")
@@ -75,4 +79,4 @@ async def detect_from_video(
             detail="No valid detections crossed the configured line for OCR.",
         )
 
-    return result
+    return JSONResponse(status_code=200, content=jsonable_encoder(result))
