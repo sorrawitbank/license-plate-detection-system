@@ -21,7 +21,7 @@ function Log() {
     goToNextPage,
     goToPrevPage,
     changeLimit,
-  } = useGetLogs({});
+  } = useGetLogs();
 
   return (
     <MainWithNavbar className="gap-4 items-center">
