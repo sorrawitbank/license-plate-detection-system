@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { Image } from "lucide-react";
 import useDetectImage from "../../hooks/useDetectImage";
 import type { OverlayBox } from "../../types/detection";
@@ -11,16 +12,23 @@ function ImageDetection() {
     detectedImageUrl,
     imageNaturalSize,
     detectResult,
+    createLogResult,
     pictureError,
     detectError,
+    createError,
+    hasDetect,
     isDetecting,
+    isLoading,
     detectCar,
     detectPlate,
     preprocessOcr,
+    eventType,
     handleCheckbox,
     handleImageFileChange,
+    handleEventTypeChange,
     handleLoadImage,
     handleSubmit,
+    handleCreateLogSubmit,
   } = useDetectImage();
 
   const overlayBoxes: OverlayBox[] =
@@ -274,6 +282,83 @@ function ImageDetection() {
               );
             })}
           </ul>
+          {createError && (
+            <div
+              role="alert"
+              className="style-body-1 font-bold bg-error text-error-content p-4 rounded-lg"
+            >
+              {createError}
+            </div>
+          )}
+          <form onSubmit={handleCreateLogSubmit}>
+            <fieldset
+              disabled={hasDetect || isDetecting || isLoading}
+              className="flex justify-between items-center"
+            >
+              <div className="flex gap-2">
+                <span className="style-body-1">Event type is</span>
+                <label className="label style-body-1 text-accent-content font-bold">
+                  <input
+                    id="one-event-type-in"
+                    type="radio"
+                    name="one-event-type-radio"
+                    checked={eventType === "IN"}
+                    onChange={() => handleEventTypeChange("IN")}
+                    className="radio radio-accent"
+                  />
+                  IN
+                </label>
+                <label className="label style-body-1 text-accent-content font-bold">
+                  <input
+                    id="one-event-type-out"
+                    type="radio"
+                    name="one-event-type-radio"
+                    checked={eventType === "OUT"}
+                    onChange={() => handleEventTypeChange("OUT")}
+                    className="radio radio-accent"
+                  />
+                  OUT
+                </label>
+              </div>
+              <button type="submit" className="btn btn-secondary btn-lg">
+                {isLoading && (
+                  <span className="loading loading-spinner loading-sm" />
+                )}
+                Create log
+              </button>
+            </fieldset>
+          </form>
+          {hasDetect && createLogResult && (
+            <>
+              <div
+                role="status"
+                className="text-success-content style-body-1 font-bold bg-success p-4 rounded-lg"
+              >
+                {`Created ${createLogResult.count} ${
+                  createLogResult.count === 1 ? "log" : "logs"
+                } successfully.`}
+              </div>
+              <ul className="flex flex-col gap-2">
+                {createLogResult.entries.map((item) => {
+                  const detectedAt = format(
+                    item.detectedAt,
+                    "dd MMMM yyyy HH:mm:ss"
+                  );
+                  const matchLabel =
+                    item.matchScore !== null
+                      ? ` (${Math.round(item.matchScore)}% match)`
+                      : "";
+
+                  return (
+                    <li key={item.logId} className="style-body-1">
+                      <span className="font-bold">{item.detectedPlate}</span>
+                      {` — ${item.status}${matchLabel} — ${eventType} at ${detectedAt}`}
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
         </section>
       )}
     </>
