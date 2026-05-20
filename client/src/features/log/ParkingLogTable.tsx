@@ -2,6 +2,8 @@ import { format } from "date-fns";
 import type { ParkingLog } from "../../types/log";
 
 interface Props {
+  page: number;
+  limit: number;
   logs: ParkingLog[];
 }
 
@@ -9,7 +11,7 @@ function ParkingLogTable(props: Props) {
   return (
     <table className="table whitespace-nowrap">
       {/* head */}
-      <thead>
+      <thead className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-info">
         <tr>
           <th>No.</th>
           <th>Detected Plate</th>
@@ -25,7 +27,7 @@ function ParkingLogTable(props: Props) {
       <tbody>
         {props.logs.map((log, index) => (
           <tr key={log.logId}>
-            <th>{index + 1}</th>
+            <th>{(props.page - 1) * props.limit + index + 1}</th>
             <td className="min-w-40 max-w-40 truncate">{log.detectedPlate}</td>
             <td>{log.eventType}</td>
             <td className="min-w-24 max-w-24 truncate">

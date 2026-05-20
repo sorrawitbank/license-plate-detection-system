@@ -72,7 +72,7 @@ function Log() {
       ) : logs.length ? (
         <>
           <div className="w-full overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-            <ParkingLogTable logs={logs} />
+            <ParkingLogTable page={page} limit={limit} logs={logs} />
           </div>
           <span className="style-body-3 text-info">
             Total logs: {totalLogs}
