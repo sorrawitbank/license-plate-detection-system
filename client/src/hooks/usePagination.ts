@@ -20,32 +20,21 @@ function usePagination(params: Params) {
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
-  const updateFromResponse = useCallback(
-    (meta: PaginationMeta) => {
-      setTotalCount(meta.totalCount);
-      setTotalPages(meta.totalPages);
-      setPage(meta.currentPage);
-      setLimit(meta.limit);
-      setSearchParams(
-        (prev) => {
-          const params = new URLSearchParams(prev);
-          if (meta.currentPage > 1) {
-            params.set("page", String(meta.currentPage));
-          } else {
-            params.delete("page");
-          }
-          if (meta.limit === 10) {
-            params.delete("limit");
-          } else {
-            params.set("limit", String(meta.limit));
-          }
-          return params;
-        },
-        { replace: true }
-      );
-    },
-    [setSearchParams]
-  );
+  const updateFromResponse = useCallback((meta: PaginationMeta) => {
+    setTotalCount(meta.totalCount);
+    setTotalPages(meta.totalPages);
+    setPage(meta.currentPage);
+    setLimit(meta.limit);
+  }, []);
+
+  const resetPageState = useCallback(() => {
+    setPage(1);
+  }, []);
+
+  const deletePageParam = useCallback((params: URLSearchParams) => {
+    params.delete("page");
+    return params;
+  }, []);
 
   const goToPage = useCallback(
     (nextPage: number) => {
@@ -79,25 +68,17 @@ function usePagination(params: Params) {
     goToPage(page - 1);
   }, [goToPage, page]);
 
-  const resetPage = useCallback(
-    (params?: URLSearchParams) => {
-      setPage(1);
-      if (params) {
+  const resetPage = useCallback(() => {
+    setPage(1);
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
         params.delete("page");
         return params;
-      }
-
-      setSearchParams(
-        (prev) => {
-          const params = new URLSearchParams(prev);
-          params.delete("page");
-          return params;
-        },
-        { replace: true }
-      );
-    },
-    [setSearchParams]
-  );
+      },
+      { replace: true }
+    );
+  }, [setSearchParams]);
 
   const changeLimit = useCallback(
     (nextLimit: number) => {
@@ -135,6 +116,8 @@ function usePagination(params: Params) {
     goToPrevPage,
     changeLimit,
     resetPage,
+    resetPageState,
+    deletePageParam,
     updateFromResponse,
   };
 }

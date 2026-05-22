@@ -51,7 +51,8 @@ function useGetLogs() {
     goToNextPage,
     goToPrevPage,
     changeLimit,
-    resetPage,
+    resetPageState,
+    deletePageParam,
     updateFromResponse,
   } = usePagination({
     initialPage:
@@ -119,10 +120,10 @@ function useGetLogs() {
       debounceFunction(
         (value: string) => {
           setKeyword(value);
+          resetPageState();
           setSearchParams(
             (prev) => {
-              const params = new URLSearchParams(prev);
-              const next = resetPage(params) ?? params;
+              const next = deletePageParam(new URLSearchParams(prev));
               if (value) {
                 next.set("keyword", value);
               } else {
@@ -135,7 +136,7 @@ function useGetLogs() {
         },
         { wait: 600 }
       ),
-    [resetPage, setSearchParams]
+    [resetPageState, deletePageParam, setSearchParams]
   );
 
   const handleKeywordChange: React.ChangeEventHandler<HTMLInputElement> = (
@@ -151,21 +152,18 @@ function useGetLogs() {
   ) => {
     const value = event.target.value;
     setEventType(value === "ALL" ? undefined : (value as LogEventType));
+    resetPageState();
     setSearchParams(
       (prev) => {
-        const params = new URLSearchParams(prev);
-        const resetParams = resetPage(params);
-        if (resetParams) {
-          if (value === "IN") {
-            resetParams.set("event", "IN");
-          } else if (value === "OUT") {
-            resetParams.set("event", "OUT");
-          } else {
-            resetParams.delete("event");
-          }
-          return resetParams;
+        const next = deletePageParam(new URLSearchParams(prev));
+        if (value === "IN") {
+          next.set("event", "IN");
+        } else if (value === "OUT") {
+          next.set("event", "OUT");
+        } else {
+          next.delete("event");
         }
-        return params;
+        return next;
       },
       { replace: true }
     );
