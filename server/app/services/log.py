@@ -108,9 +108,6 @@ async def create_log_entry_for_detection(
         "logId": int(row["log_id"]),
         "status": status,
         "detectedPlate": plate_match["detectedPlate"],
-        "confidence": round(confidence, 2),
-        "vehicleId": vehicle_id,
-        "slotId": slot_id,
         "matchScore": plate_match["matchScore"],
         "detectedAt": row["detected_at"],
     }
