@@ -30,7 +30,11 @@ function Log() {
         <h3 className="style-headline-3">Log</h3>
         <div className="flex gap-2">
           <div className="flex gap-2 not-md:flex-1">
+            <label htmlFor="limit-select" className="sr-only">
+              Limit
+            </label>
             <select
+              id="limit-select"
               value={limit}
               onChange={(event) => changeLimit(Number(event.target.value))}
               className="select select-accent flex-1 md:w-30 "
@@ -41,7 +45,11 @@ function Log() {
               <option value="50">50</option>
               <option value="100">100</option>
             </select>
+            <label htmlFor="event-select" className="sr-only">
+              Event type
+            </label>
             <select
+              id="event-select"
               value={eventType ?? "ALL"}
               onChange={handleEventTypeChange}
               className="select select-accent flex-1 md:w-30 "
@@ -52,8 +60,11 @@ function Log() {
               <option value="OUT">OUT</option>
             </select>
           </div>
-
+          <label htmlFor="search-log" className="sr-only">
+            Search log
+          </label>
           <input
+            id="search-log"
             type="search"
             placeholder="Search log..."
             value={searchInput}
