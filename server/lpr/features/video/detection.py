@@ -10,7 +10,7 @@ import numpy as np
 
 from app.utils.carmel_key import camelize_keys
 from app.utils.crop_by_bbox import crop_by_bbox
-from app.utils.provinces import match_province_from_ocr_texts
+from app.services.province import match_province_from_ocr_texts
 from lpr.ocr.detection import detect_text
 from lpr.yolo.car.detection import detect_cars
 from lpr.yolo.license_plate.detection import detect_license_plates

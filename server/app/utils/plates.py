@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from app.utils.provinces import _plate_like
+from app.services.province import _plate_like
 
 
 _THAI_PLATE_RE = re.compile(r"(\d+[ก-ฮ]+)(\d+)")
