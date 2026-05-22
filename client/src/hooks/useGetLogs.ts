@@ -17,11 +17,24 @@ function parseEventTypeFromSearchParam(
   return value && isLogEventType(value) ? value : undefined;
 }
 
+function parseKeywordFromSearchParam(param: string | null): string {
+  return param?.trim() ?? "";
+}
+
 function useGetLogs() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState("");
-  const [eventType, setEventType] = useState<LogEventType | undefined>(() =>
-    parseEventTypeFromSearchParam(searchParams.get("event"))
+
+  const initialKeyword = parseKeywordFromSearchParam(
+    searchParams.get("keyword")
+  );
+  const initialEventType = parseEventTypeFromSearchParam(
+    searchParams.get("event")
+  );
+
+  const [searchInput, setSearchInput] = useState(initialKeyword);
+  const [keyword, setKeyword] = useState(initialKeyword);
+  const [eventType, setEventType] = useState<LogEventType | undefined>(
+    initialEventType
   );
   const [logs, setLogs] = useState<ParkingLog[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,20 +114,36 @@ function useGetLogs() {
     }
   };
 
-  const debouncedSetKeyword = useMemo(() => {
-    return debounceFunction(
-      (keyword: string) => {
-        setKeyword(keyword);
-        resetPage();
-      },
-      { wait: 600 }
-    );
-  }, []);
+  const debouncedApplyKeyword = useMemo(
+    () =>
+      debounceFunction(
+        (value: string) => {
+          setKeyword(value);
+          setSearchParams(
+            (prev) => {
+              const params = new URLSearchParams(prev);
+              const next = resetPage(params) ?? params;
+              if (value) {
+                next.set("keyword", value);
+              } else {
+                next.delete("keyword");
+              }
+              return next;
+            },
+            { replace: true }
+          );
+        },
+        { wait: 600 }
+      ),
+    [resetPage, setSearchParams]
+  );
 
   const handleKeywordChange: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    debouncedSetKeyword(event.target.value.trim());
+    const value = event.target.value;
+    setSearchInput(value);
+    debouncedApplyKeyword(value.trim());
   };
 
   const handleEventTypeChange: React.ChangeEventHandler<HTMLSelectElement> = (
@@ -149,6 +178,7 @@ function useGetLogs() {
     limit,
     totalLogs: totalCount,
     totalPages,
+    searchInput,
     isLoading,
     logsError,
     handleKeywordChange,

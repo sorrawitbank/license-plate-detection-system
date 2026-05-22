@@ -11,6 +11,7 @@ function Log() {
     limit,
     totalLogs,
     totalPages,
+    searchInput,
     isLoading,
     logsError,
     handleKeywordChange,
@@ -53,8 +54,9 @@ function Log() {
           </div>
 
           <input
-            type="text"
+            type="search"
             placeholder="Search log..."
+            value={searchInput}
             onChange={handleKeywordChange}
             className="input input-secondary md:w-80 not-md:flex-1"
           />
