@@ -12,7 +12,7 @@ function ParkingLogTable(props: Props) {
     <table className="table whitespace-nowrap">
       {/* head */}
       <thead className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-info">
-        <tr>
+        <tr className="text-info-content">
           <th>No.</th>
           <th>Detected Plate</th>
           <th>Event Type</th>
